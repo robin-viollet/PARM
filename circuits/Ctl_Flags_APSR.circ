@@ -228,5 +228,45 @@ end TCL_Generic;
       <a name="output" val="true"/>
       <a name="width" val="4"/>
     </comp>
+    <comp lib="1" loc="(290,100)" name="AND Gate">
+      <a name="size" val="30"/>
+      <a name="width" val="4"/>
+    </comp>
+    <comp lib="1" loc="(290,50)" name="AND Gate">
+      <a name="negate1" val="true"/>
+      <a name="size" val="30"/>
+      <a name="width" val="4"/>
+    </comp>
+    <comp lib="1" loc="(370,100)" name="OR Gate">
+      <a name="size" val="30"/>
+      <a name="width" val="4"/>
+    </comp>
+    <comp lib="4" loc="(390,70)" name="Register">
+      <a name="appearance" val="logisim_evolution"/>
+      <a name="width" val="4"/>
+    </comp>
+    <wire from="(210,100)" to="(230,100)"/>
+    <wire from="(210,140)" to="(390,140)"/>
+    <wire from="(210,180)" to="(420,180)"/>
+    <wire from="(210,60)" to="(230,60)"/>
+    <wire from="(230,100)" to="(230,110)"/>
+    <wire from="(230,110)" to="(260,110)"/>
+    <wire from="(230,60)" to="(230,90)"/>
+    <wire from="(230,60)" to="(250,60)"/>
+    <wire from="(230,90)" to="(260,90)"/>
+    <wire from="(250,20)" to="(250,40)"/>
+    <wire from="(250,20)" to="(490,20)"/>
+    <wire from="(250,40)" to="(260,40)"/>
+    <wire from="(290,100)" to="(310,100)"/>
+    <wire from="(290,50)" to="(310,50)"/>
+    <wire from="(310,100)" to="(310,110)"/>
+    <wire from="(310,110)" to="(340,110)"/>
+    <wire from="(310,50)" to="(310,90)"/>
+    <wire from="(310,90)" to="(340,90)"/>
+    <wire from="(370,100)" to="(390,100)"/>
+    <wire from="(420,160)" to="(420,180)"/>
+    <wire from="(450,100)" to="(490,100)"/>
+    <wire from="(490,100)" to="(560,100)"/>
+    <wire from="(490,20)" to="(490,100)"/>
   </circuit>
 </project>
