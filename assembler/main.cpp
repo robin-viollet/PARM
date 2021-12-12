@@ -221,7 +221,7 @@ int main(int argc, char** argv){
 
     auto startTime = high_resolution_clock::now();
     regex extensionRegex("^(.*)[.]s$");
-    regex tabRegex("^\t.*$");
+    regex labelRegex("^.*:$");
     regex startsWithPointRegex("^\t?[.].*$");
     string reason;
 
@@ -251,7 +251,13 @@ int main(int argc, char** argv){
 
                     std::cout << "newline" << (point ? " . point here" : "") << std::endl;
 
-                    if (regex_match(line, tabRegex)){
+                    if (regex_match(line, labelRegex)){
+
+                        std::string label = line.substr(0, line.find(':'));
+                        labels[label] =  pc + 1;
+                        std::cout << "label: " << label << std::endl;
+
+                    } else {
 
                         std::vector<std::string> words {
                                 std::istream_iterator<std::string>(iss),
@@ -264,14 +270,8 @@ int main(int argc, char** argv){
                         for (const auto& x : words)
                             std::cout << "word: " << x << std::endl;
 
-                    } else {
-
-                        label = line.substr(0, line.find(':'));
-                        std::cout << "label: " << label << std::endl;
-
                     }
                 }
-
 
                 //out << "2.0 raw" << std::endl;
                 std::cout << "avengers assembled in " << outFile << " in " << duration_cast<seconds>(high_resolution_clock::now() - startTime).count() << "s!" << std::endl;
