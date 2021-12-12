@@ -2,7 +2,6 @@
 #include <regex>
 #include <iostream>
 #include <filesystem>
-#include <numeric>
 
 #include "exception.hpp"
 
@@ -26,180 +25,194 @@ void replace_all(std::string& str, std::string_view what, std::string_view with)
 
 unsigned short convert_instruction(const std::string& instruction, std::vector<std::string>& args){
     if (std::regex_match(instruction, std::regex("lsls?"))){
+        // Immediate (5bits)
         // LSLS <Rd > , <Rm> ,# <imm5>
         // 15 14 13 12 11 | 10 9 8 7 6 | 5 4 3 | 2 1 0
         //  0  0  0  0  0 |       imm5 |    Rm |    Rd
         return 0b00000'00000'000'000;
+
+        // Registers
+        // LSLS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 0 0 1 0    Rm   Rdn
+        return 0b0100000010'000000;
     } else if (std::regex_match(instruction, std::regex("lsrs?"))){
+        // Immediate (5bits)
         // LSRS <Rd > , <Rm> ,# <imm5>
         // 15 14 13 12 11 | 10 9 8 7 6 | 5 4 3 | 2 1 0
         //  0  0  0  0  1 |       imm5 |    Rm |    Rd
         return 0b00001'00000'000'000;
+
+        // Registers
+        // LSRS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 0 0 1 1    Rm   Rdn
+        return 0b0100000011'000'000;
     } else if (std::regex_match(instruction, std::regex("asrs?"))){
         // ASRS <Rd > , <Rm> ,# <imm5>
         // 15 14 13 12 11 | 10 9 8 7 6 | 5 4 3 | 2 1 0
         //  0  0  0  1  0 |       imm5 |    Rm |    Rd
         return 0b00010'00000'000'000;
     } else if (std::regex_match(instruction, std::regex("adds?"))){
-        // Register
+        // Registers
         // ADDS <Rd > , < Rn > , <Rm>
         // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
         //  0  0  0  1  1  0 0 |    Rm |    Rn |    Rd
         return 0b0001100'000'000'000;
 
-        // Immediate
+        // Immediate (3bits)
         // ADDS <Rd > , < Rn> , <#imm3>
         // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
         //  0  0  0  1  1  1 0 |  Imm3 |    Rn |    Rd
         return 0b0001110'000'000'000;
+
+        // Immediate (8bits)
+        // ADDS <Rdn > , [ < Rdn > , ] #<imm8>
+        // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
+        //  0  0  1  1  0 |     Rd |            imm8
+        return 0b00110'000'00000000;
     } else if (std::regex_match(instruction, std::regex("subs?"))){
-        // Register
+        // Registers
         // SUBS <Rd > , < Rn > , <Rm>
         // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
         //  0  0  0  1  1  0 1 |    Rm |    Rn |    Rd
         return 0b0001101'000'000'000;
 
-        // Immediate
+        // Immediate (3bits)
         // SUBS <Rd > , < Rn> ,# <imm3>
         // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
         //  0  0  0  1  1  1 1 |  Imm3 |    Rn |    Rd
         return 0b0001111'000'000'000;
+
+        // Immediate (8bits)
+        // SUBS <Rdn > , [ < Rdn > , ] #<imm8>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  0  1  1  1     Rd            imm8
+        return 0b00111'000'00000000;
+
+        // Immediate (7bits)
+        // SUB [ SP , ] SP,# <offset>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  1  0  1  1  0  0 0 0 1          imm7
+        return 0b101100001'0000000;
     } else if (std::regex_match(instruction, std::regex("movs?"))){
         // MOVS <Rd> ,# <imm8>
         // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
         //  0  0  1  0  0 |     Rd |            imm8
         return 0b00100'000'00000000;
-    } else if (std::regex_match(instruction, std::regex("adds?"))){
-        //15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
-        // 0  0  0  1  1  0 0 |    Rm |    Rn |    Rd
-        return 0b00011'00000'000'000;
-    } else if (std::regex_match(instruction, std::regex("adds?"))){
-        //15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
-        // 0  0  0  1  1  0 0 |    Rm |    Rn |    Rd
-        return 0b00011'00000'000'000;
-    } else if (std::regex_match(instruction, std::regex("adds?"))){
-        //15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
-        // 0  0  0  1  1  0 0 |    Rm |    Rn |    Rd
-        return 0b00011'00000'000'000;
-    } else if (std::regex_match(instruction, std::regex("adds?"))){
-        //15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
-        // 0  0  0  1  1  0 0 |    Rm |    Rn |    Rd
-        return 0b00011'00000'000'000;
+    } else if (std::regex_match(instruction, std::regex("cmp"))){
+        // Immediate (8bits)
+        // CMP <Rd> ,# <imm8>
+        // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
+        //  0  0  1  0  1 |     Rd |            imm8
+        return 0b00101'000'00000000;
+
+        // Registers
+        // CMP <Rn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 1 0 1 0    Rm    Rn
+        return 0b0100001010'000'000;
+    } else if (std::regex_match(instruction, std::regex("ands?"))){
+        // ANDS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 0 0 0 0    Rm   Rdn
+        return 0b0100000000'000'000;
+    } else if (std::regex_match(instruction, std::regex("eors?"))){
+        // EORS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 0 0 0 1    Rm   Rdn
+        return 0b0100000001'000'000;
+    } else if (std::regex_match(instruction, std::regex("asrs?"))){
+        // ASRS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 0 1 0 0    Rm   Rdn
+        return 0b01000000100'000'000;
+    } else if (std::regex_match(instruction, std::regex("adcs?"))){
+        // ADCS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 0 1 0 1    Rm   Rdn
+        return 0b0100000101'000'000;
+    } else if (std::regex_match(instruction, std::regex("sbcs?"))){
+        // SBCS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 0 1 1 0    Rm   Rdn
+        return 0b0100000110'000'000;
+    } else if (std::regex_match(instruction, std::regex("rors"))){
+        // RORS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 0 1 1 1    Rm   Rdn
+        return 0b0100000111'000'000;
+    } else if (std::regex_match(instruction, std::regex("tst"))){
+        // TST <Rn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 1 0 0 0    Rm    Rn
+        return 0b0100001000'000'000;
+    } else if (std::regex_match(instruction, std::regex("rsbs?"))){
+        // RSBS <Rd > , < Rn> ,#0
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 1 0 0 1    Rn    Rd
+        return 0b0100001001'000'000;
+    } else if (std::regex_match(instruction, std::regex("cmn"))){
+        // CMN <Rn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 1 0 1 1    Rm    Rn
+        return 0b0100001011'000'000;
+    } else if (std::regex_match(instruction, std::regex("orrs?"))){
+        // ORRS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 1 1 0 0    Rm   Rdn
+        return 0b0100001100'000'000;
+    } else if (std::regex_match(instruction, std::regex("muls?"))){
+        // MULS <Rdm> , < Rn > , <Rdm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 1 1 0 1    Rn   Rdm
+        return 0b0100001101'000'000;
+    } else if (std::regex_match(instruction, std::regex("bics?"))){
+        // BICS <Rdn > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 1 1 1 0    Rm   Rdn
+        return 0b0100001110'000'000;
+    } else if (std::regex_match(instruction, std::regex("mvns?"))){
+        // MVNS <Rd > , <Rm>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  0  1  0  0  0  0 1 1 1 1    Rm    Rd
+        return 0b0100001111'000'000;
+    } else if (std::regex_match(instruction, std::regex("str"))){
+        // STR <Rt > , [ SP,# <offset> ]
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  1  0  0  1  0     Rt            imm8
+        return 0b10010'000'00000000;
+    } else if (std::regex_match(instruction, std::regex("ldr"))){
+        // LDR <Rt > , [ SP{ , # <offset> } ]
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  1  0  0  1  1     Rt            imm8
+        return 0b10011'000'00000000;
+    } else if (std::regex_match(instruction, std::regex("cmp?"))){
+        // ADD [ SP , ] SP,# <offset>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  1  0  1  1  0  0 0 0 0          imm7
+        return 0b101100000'0000000;
+    } else if (std::regex_match(instruction, std::regex("b?"))){
+        // Immediate (8nits)
+        // B<c> <label>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  1  1  0  1      cond            imm8
+        return 0b1101'0000'00000000;
+
+        // Immediate (11bits)
+        // B <label>
+        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+        //  1  1  1  0  0                  imm11
+        return 0b11100'00000000000;
     }
 
-    // CMP <Rd> ,# <imm8>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 0 1 0 1 Rd imm8
+    std::string message = "unknown instruction " + instruction;
 
-    // ADDS <Rdn > , [ < Rdn > , ] #<imm8>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 0 1 1 0 Rd imm8
-
-    // SUBS <Rdn > , [ < Rdn > , ] #<imm8>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 0 1 1 1 Rd imm8
-
-    // ANDS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 0 0 0 0 Rm Rdn
-
-    // EORS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 0 0 0 1 Rm Rdn
-
-    // LSLS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 0 0 1 0 Rm Rdn
-
-    // LSRS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 0 0 1 1 Rm Rdn
-
-    // ASRS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 0 1 0 0 Rm Rdn
-
-    // ADCS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 0 1 0 1 Rm Rdn
-
-    // SBCS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 0 1 1 0 Rm Rdn
-
-    // RORS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 0 1 1 1 Rm Rdn
-
-    // TST <Rn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 1 0 0 0 Rm Rn
-
-    // RSBS <Rd > , < Rn> ,#0
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 1 0 0 1 Rn Rd
-
-    // CMP <Rn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 1 0 1 0 Rm Rn
-
-    // CMN <Rn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 1 0 1 1 Rm Rn
-
-    // ORRS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 1 1 0 0 Rm Rdn
-
-    // MULS <Rdm> , < Rn > , <Rdm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 1 1 0 1 Rn Rdm
-
-    // BICS <Rdn > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 1 1 1 0 Rm Rdn
-
-    // MVNS <Rd > , <Rm>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 0 1 0 0 0 0 1 1 1 1 Rm Rd
-
-    // STR <Rt > , [ SP,# <offset> ]
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 1 0 0 1 0 Rt imm8
-
-    // LDR <Rt > , [ SP{ , # <offset> } ]
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 1 0 0 1 1 Rt imm8
-
-    // ADD [ SP , ] SP,# <offset>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 1 0 1 1 0 0 0 0 0 imm7
-
-    // SUB [ SP , ] SP,# <offset>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 1 0 1 1 0 0 0 0 1 imm7
-
-    // B<c> <label>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 1 1 0 1 cond imm8
-
-    // B <label>
-    // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-    // 1 1 1 0 0 imm11
-
-    else if (std::regex_match(instruction, std::regex(".text"))){
-        return 0;
+    for (const std::string& arg: args){
+        message += " " + arg;
     }
 
-    else {
-        std::string message = "unknown instruction " + instruction;
-
-        for (const std::string& arg : args){
-            message += " " + arg;
-        }
-
-        throw exception(message);
-    }
+    throw exception(message);
 }
 
 int main(int argc, char** argv){
