@@ -213,7 +213,7 @@ end TCL_Generic;
       <circ-port height="10" pin="340,290" width="10" x="265" y="55"/>
       <circ-port height="10" pin="610,370" width="10" x="265" y="95"/>
       <circ-port height="10" pin="610,460" width="10" x="265" y="135"/>
-      <circ-port height="10" pin="630,290" width="10" x="265" y="105"/>
+      <circ-port height="10" pin="630,290" width="10" x="265" y="115"/>
       <circ-port height="10" pin="710,100" width="10" x="265" y="75"/>
       <circ-port height="8" pin="200,190" width="8" x="46" y="76"/>
       <circ-port height="8" pin="340,120" width="8" x="46" y="96"/>
