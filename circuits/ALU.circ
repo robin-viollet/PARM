@@ -157,7 +157,7 @@
       <circ-anchor facing="north" height="6" width="6" x="117" y="197"/>
       <circ-port height="10" pin="1520,520" width="10" x="145" y="195"/>
       <circ-port height="10" pin="1930,440" width="10" x="115" y="215"/>
-      <circ-port height="8" pin="230,180" width="8" x="146" y="186"/>
+      <circ-port height="8" pin="230,180" width="8" x="86" y="176"/>
       <circ-port height="8" pin="230,280" width="8" x="146" y="176"/>
       <circ-port height="8" pin="230,350" width="8" x="76" y="186"/>
       <circ-port height="8" pin="230,420" width="8" x="86" y="196"/>
