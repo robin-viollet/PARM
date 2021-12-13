@@ -211,7 +211,7 @@ end TCL_Generic;
     <appear>
       <circ-anchor facing="east" height="6" width="6" x="247" y="57"/>
       <circ-port height="10" pin="680,110" width="10" x="245" y="55"/>
-      <circ-port height="10" pin="700,320" width="10" x="245" y="65"/>
+      <circ-port height="10" pin="700,320" width="10" x="245" y="75"/>
       <circ-port height="8" pin="210,140" width="8" x="46" y="76"/>
       <circ-port height="8" pin="210,290" width="8" x="46" y="116"/>
       <circ-port height="8" pin="210,320" width="8" x="46" y="136"/>

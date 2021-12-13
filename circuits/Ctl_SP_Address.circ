@@ -211,7 +211,7 @@ end TCL_Generic;
     <a name="clabelup" val="east"/>
     <appear>
       <circ-anchor facing="east" height="6" width="6" x="337" y="57"/>
-      <circ-port height="10" pin="180,250" width="10" x="335" y="65"/>
+      <circ-port height="10" pin="180,250" width="10" x="335" y="75"/>
       <circ-port height="10" pin="830,130" width="10" x="335" y="55"/>
       <circ-port height="8" pin="280,200" width="8" x="46" y="56"/>
       <circ-port height="8" pin="290,120" width="8" x="46" y="96"/>
