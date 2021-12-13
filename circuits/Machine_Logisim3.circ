@@ -42,6 +42,7 @@
       <a name="size" val="20"/>
     </tool>
     <tool name="AND Gate">
+      <a name="facing" val="south"/>
       <a name="size" val="30"/>
     </tool>
     <tool name="OR Gate">
@@ -1651,23 +1652,23 @@ end TCL_Generic;
     </comp>
     <comp lib="5" loc="(1100,1110)" name="TTY"/>
     <comp lib="5" loc="(130,1030)" name="DipSwitch">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@44bb3660"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@37a89ad5"/>
       <a name="labelloc" val="south"/>
     </comp>
     <comp lib="5" loc="(140,1150)" name="Keyboard"/>
     <comp lib="5" loc="(20,1030)" name="DipSwitch">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@3f4e3bd8"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@106bff13"/>
       <a name="labelloc" val="south"/>
     </comp>
     <comp lib="5" loc="(240,1030)" name="DipSwitch">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@4afbc1e8"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@740ed5d9"/>
       <a name="labelloc" val="south"/>
     </comp>
     <comp lib="5" loc="(360,1120)" name="Joystick">
       <a name="bits" val="5"/>
     </comp>
     <comp lib="5" loc="(450,1010)" name="DotMatrix">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@73e9467e"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@468b1296"/>
       <a name="inputtype" val="row"/>
       <a name="matrixcols" val="8"/>
       <a name="matrixrows" val="4"/>
@@ -1682,39 +1683,39 @@ end TCL_Generic;
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="5" loc="(630,1110)" name="Hex Digit Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@6efc6655"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@350646a0"/>
     </comp>
     <comp lib="5" loc="(670,1020)" name="DotMatrix">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@20a210a9"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@7adab474"/>
       <a name="inputtype" val="row"/>
       <a name="matrixcols" val="32"/>
       <a name="matrixrows" val="1"/>
     </comp>
     <comp lib="5" loc="(670,1110)" name="Hex Digit Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@344261d4"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@787806eb"/>
     </comp>
     <comp lib="5" loc="(710,1110)" name="Hex Digit Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@d210b94"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@66f9b4d0"/>
     </comp>
     <comp lib="5" loc="(750,1110)" name="Hex Digit Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@e21aab"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@61cddde9"/>
     </comp>
     <comp lib="5" loc="(770,910)" name="Button">
       <a name="facing" val="west"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="5" loc="(870,1110)" name="Hex Digit Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@30f57546"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@4e1bacb0"/>
     </comp>
     <comp lib="5" loc="(890,910)" name="Button"/>
     <comp lib="5" loc="(910,1110)" name="Hex Digit Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@179eee4d"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@76ecb4c6"/>
     </comp>
     <comp lib="5" loc="(950,1110)" name="Hex Digit Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@12662a81"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@5d98c1ff"/>
     </comp>
     <comp lib="5" loc="(990,1110)" name="Hex Digit Display">
-      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@2c15d24"/>
+      <a name="Dummy" val="com.cburch.logisim.fpga.data.ComponentMapInformationContainer@52356d30"/>
     </comp>
     <comp lib="8" loc="(1231,132)" name="Text">
       <a name="font" val="SansSerif plain 20"/>
@@ -2123,8 +2124,8 @@ end TCL_Generic;
       <circ-port height="10" pin="930,50" width="10" x="215" y="15"/>
       <circ-port height="8" pin="190,160" width="8" x="46" y="96"/>
       <circ-port height="8" pin="190,240" width="8" x="46" y="116"/>
-      <circ-port height="8" pin="190,330" width="8" x="46" y="56"/>
-      <circ-port height="8" pin="190,360" width="8" x="46" y="76"/>
+      <circ-port height="8" pin="190,300" width="8" x="46" y="56"/>
+      <circ-port height="8" pin="190,330" width="8" x="46" y="76"/>
       <rect fill="none" height="150" stroke="#000000" stroke-width="2" width="180" x="60" y="20"/>
       <rect height="20" stroke="none" width="181" x="60" y="150"/>
       <rect height="3" stroke="none" width="10" x="50" y="119"/>
@@ -2200,11 +2201,16 @@ end TCL_Generic;
       <a name="label" val="ROM_In"/>
       <a name="width" val="16"/>
     </comp>
-    <comp lib="0" loc="(190,330)" name="Pin">
+    <comp lib="0" loc="(190,300)" name="Pin">
       <a name="label" val="Clk"/>
     </comp>
-    <comp lib="0" loc="(190,360)" name="Pin">
+    <comp lib="0" loc="(190,330)" name="Pin">
       <a name="label" val="Reset"/>
+    </comp>
+    <comp lib="0" loc="(470,140)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="RESULT_ALU"/>
+      <a name="width" val="32"/>
     </comp>
     <comp lib="0" loc="(790,110)" name="Pin">
       <a name="facing" val="south"/>
@@ -2219,6 +2225,11 @@ end TCL_Generic;
       <a name="output" val="true"/>
       <a name="radix" val="16"/>
       <a name="width" val="32"/>
+    </comp>
+    <comp lib="0" loc="(820,530)" name="Constant">
+      <a name="facing" val="north"/>
+      <a name="value" val="0x0"/>
+      <a name="width" val="3"/>
     </comp>
     <comp lib="0" loc="(830,70)" name="Pin">
       <a name="facing" val="south"/>
@@ -2255,6 +2266,11 @@ end TCL_Generic;
       <a name="radix" val="16"/>
       <a name="width" val="32"/>
     </comp>
+    <comp lib="0" loc="(910,700)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="label" val="RESULT_ALU"/>
+      <a name="width" val="32"/>
+    </comp>
     <comp lib="0" loc="(930,50)" name="Pin">
       <a name="facing" val="south"/>
       <a name="label" val="R7"/>
@@ -2262,7 +2278,10 @@ end TCL_Generic;
       <a name="radix" val="16"/>
       <a name="width" val="32"/>
     </comp>
-    <comp lib="10" loc="(860,450)" name="ALU">
+    <comp lib="1" loc="(570,470)" name="NOT Gate">
+      <a name="size" val="20"/>
+    </comp>
+    <comp lib="10" loc="(990,620)" name="ALU">
       <a name="label" val="ALU_1"/>
     </comp>
     <comp lib="11" loc="(990,140)" name="BancRegistre">
@@ -2271,14 +2290,113 @@ end TCL_Generic;
     <comp lib="12" loc="(530,390)" name="Controller">
       <a name="label" val="Controller_1"/>
     </comp>
+    <comp lib="2" loc="(570,150)" name="Multiplexer">
+      <a name="enable" val="false"/>
+      <a name="width" val="32"/>
+    </comp>
+    <comp lib="2" loc="(810,520)" name="BitSelector">
+      <a name="facing" val="west"/>
+      <a name="group" val="5"/>
+      <a name="width" val="32"/>
+    </comp>
+    <comp lib="2" loc="(840,580)" name="Multiplexer">
+      <a name="enable" val="false"/>
+      <a name="width" val="5"/>
+    </comp>
+    <comp lib="2" loc="(960,490)" name="Multiplexer">
+      <a name="enable" val="false"/>
+      <a name="facing" val="south"/>
+      <a name="width" val="32"/>
+    </comp>
+    <wire from="(1000,180)" to="(1110,180)"/>
+    <wire from="(1000,200)" to="(1080,200)"/>
+    <wire from="(1020,540)" to="(1020,600)"/>
+    <wire from="(1020,540)" to="(1110,540)"/>
+    <wire from="(1020,620)" to="(1020,730)"/>
+    <wire from="(1080,200)" to="(1080,450)"/>
+    <wire from="(1080,200)" to="(1240,200)"/>
+    <wire from="(1080,450)" to="(1080,520)"/>
+    <wire from="(1110,180)" to="(1110,540)"/>
+    <wire from="(1140,470)" to="(1140,650)"/>
+    <wire from="(1140,470)" to="(1240,470)"/>
+    <wire from="(1170,540)" to="(1170,670)"/>
+    <wire from="(1170,540)" to="(1240,540)"/>
+    <wire from="(190,160)" to="(540,160)"/>
+    <wire from="(190,240)" to="(250,240)"/>
+    <wire from="(190,300)" to="(230,300)"/>
+    <wire from="(190,330)" to="(210,330)"/>
+    <wire from="(210,330)" to="(210,430)"/>
+    <wire from="(210,330)" to="(800,330)"/>
+    <wire from="(210,430)" to="(360,430)"/>
+    <wire from="(230,300)" to="(230,410)"/>
+    <wire from="(230,300)" to="(770,300)"/>
+    <wire from="(230,410)" to="(360,410)"/>
+    <wire from="(250,240)" to="(250,390)"/>
+    <wire from="(250,390)" to="(360,390)"/>
+    <wire from="(340,450)" to="(340,730)"/>
+    <wire from="(340,450)" to="(360,450)"/>
+    <wire from="(340,730)" to="(1020,730)"/>
+    <wire from="(470,140)" to="(540,140)"/>
+    <wire from="(530,390)" to="(940,390)"/>
+    <wire from="(530,410)" to="(960,410)"/>
+    <wire from="(530,430)" to="(550,430)"/>
+    <wire from="(530,450)" to="(570,450)"/>
+    <wire from="(530,470)" to="(550,470)"/>
+    <wire from="(530,490)" to="(910,490)"/>
+    <wire from="(530,510)" to="(610,510)"/>
+    <wire from="(530,530)" to="(630,530)"/>
+    <wire from="(530,550)" to="(650,550)"/>
+    <wire from="(530,570)" to="(670,570)"/>
+    <wire from="(530,590)" to="(810,590)"/>
+    <wire from="(530,610)" to="(820,610)"/>
+    <wire from="(530,630)" to="(970,630)"/>
+    <wire from="(530,650)" to="(1140,650)"/>
+    <wire from="(530,670)" to="(1170,670)"/>
+    <wire from="(550,170)" to="(550,430)"/>
+    <wire from="(570,150)" to="(720,150)"/>
+    <wire from="(570,430)" to="(1240,430)"/>
+    <wire from="(570,430)" to="(570,450)"/>
+    <wire from="(570,470)" to="(940,470)"/>
+    <wire from="(610,170)" to="(610,510)"/>
+    <wire from="(610,170)" to="(720,170)"/>
+    <wire from="(630,350)" to="(630,530)"/>
+    <wire from="(630,350)" to="(870,350)"/>
+    <wire from="(650,370)" to="(650,550)"/>
+    <wire from="(650,370)" to="(910,370)"/>
+    <wire from="(670,450)" to="(670,570)"/>
+    <wire from="(670,450)" to="(950,450)"/>
+    <wire from="(770,220)" to="(770,300)"/>
     <wire from="(790,110)" to="(790,130)"/>
+    <wire from="(790,520)" to="(790,570)"/>
+    <wire from="(790,520)" to="(810,520)"/>
+    <wire from="(790,570)" to="(810,570)"/>
+    <wire from="(800,220)" to="(800,330)"/>
     <wire from="(810,90)" to="(810,130)"/>
+    <wire from="(820,600)" to="(820,610)"/>
     <wire from="(830,70)" to="(830,130)"/>
+    <wire from="(840,520)" to="(1080,520)"/>
+    <wire from="(840,580)" to="(850,580)"/>
     <wire from="(850,50)" to="(850,130)"/>
+    <wire from="(850,580)" to="(850,610)"/>
+    <wire from="(850,610)" to="(950,610)"/>
     <wire from="(870,110)" to="(870,130)"/>
+    <wire from="(870,220)" to="(870,350)"/>
     <wire from="(890,90)" to="(890,130)"/>
+    <wire from="(910,220)" to="(910,370)"/>
+    <wire from="(910,490)" to="(910,620)"/>
+    <wire from="(910,620)" to="(960,620)"/>
     <wire from="(910,70)" to="(910,130)"/>
+    <wire from="(910,700)" to="(990,700)"/>
     <wire from="(930,50)" to="(930,130)"/>
+    <wire from="(940,280)" to="(1240,280)"/>
+    <wire from="(940,280)" to="(940,390)"/>
+    <wire from="(950,450)" to="(950,460)"/>
+    <wire from="(960,360)" to="(1240,360)"/>
+    <wire from="(960,360)" to="(960,410)"/>
+    <wire from="(960,490)" to="(960,600)"/>
+    <wire from="(970,450)" to="(1080,450)"/>
+    <wire from="(970,450)" to="(970,460)"/>
+    <wire from="(990,640)" to="(990,700)"/>
   </circuit>
   <circuit name="BCD8digits">
     <a name="appearance" val="custom"/>
