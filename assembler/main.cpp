@@ -23,187 +23,344 @@ void replace_all(std::string& str, std::string_view what, std::string_view with)
     }
 }
 
-unsigned short convert_instruction(const std::string& instruction, std::vector<std::string>& args){
+std::bitset<16> parseRegister(std::string& s){
+    if (s[0] == 'r'){
+        return std::bitset<3>(std::stoi(s.substr(1))).to_ullong();
+    }
+
+    // TODO Fix
+    //return std::bitset<3>(0).to_ullong();
+
+    throw exception("register not parsed");
+}
+
+template <int T>
+std::bitset<16> parseImm(std::string& s, bool sp = false){
+    if (s[0] == '#'){
+        return std::bitset<T>(std::stoi(s.substr(1)) / (sp ? 4 : 1)).to_ullong();
+    }
+
+    throw exception("immediate not parsed");
+}
+
+std::bitset<16> parseCondition(const std::string& s){
+    if (s == "EQ")
+        return 0b000000000000'0000;
+    else if (s == "NE")
+        return 0b000000000000'0001;
+    else if (s == "CS")
+        return 0b000000000000'0010;
+    else if (s == "CC" || s == "LO")
+        return 0b000000000000'0011;
+    else if (s == "MI")
+        return 0b000000000000'0100;
+    else if (s == "PL")
+        return 0b000000000000'0101;
+    else if (s == "VS")
+        return 0b000000000000'0110;
+    else if (s == "VC")
+        return 0b000000000000'0111;
+    else if (s == "HI")
+        return 0b000000000000'1000;
+    else if (s == "LS")
+        return 0b000000000000'1001;
+    else if (s == "GE")
+        return 0b000000000000'1010;
+    else if (s == "LT")
+        return 0b000000000000'1011;
+    else if (s == "GT")
+        return 0b000000000000'1100;
+    else if (s == "LE")
+        return 0b000000000000'1101;
+    else if (s == "AL")
+        return 0b000000000000'1110;
+    else
+        throw exception("condition not recognized: " + s);
+}
+
+template <int T, int U, int V = std::max(T, U)>
+std::bitset<V> operator|(std::bitset<T>& b1, std::bitset<U> b2){
+    return std::bitset<V>(b1) |= b2;
+}
+
+std::bitset<16> convert_instruction(const std::string& instruction, std::vector<std::string>& args){
     if (std::regex_match(instruction, std::regex("lsls?"))){
-        // Immediate (5bits)
-        // LSLS <Rd > , <Rm> ,# <imm5>
-        // 15 14 13 12 11 | 10 9 8 7 6 | 5 4 3 | 2 1 0
-        //  0  0  0  0  0 |       imm5 |    Rm |    Rd
-        return 0b00000'00000'000'000;
-
-        // Registers
-        // LSLS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 0 0 1 0    Rm   Rdn
-        return 0b0100000010'000000;
+        if (args.size() == 3){
+            // Immediate (5bits)
+            // LSLS <Rd > , <Rm> ,# <imm5>
+            // 15 14 13 12 11 | 10 9 8 7 6 | 5 4 3 | 2 1 0
+            //  0  0  0  0  0 |       imm5 |    Rm |    Rd
+            return std::bitset<16>(0b00000'00000'000'000) |
+                parseImm<5>(args[2]) << 6 | parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        } else if (args.size() == 2){
+            // Registers
+            // LSLS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 0 0 1 0    Rm   Rdn
+            return std::bitset<16>(0b0100000010'000'000) |
+                parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("lsrs?"))){
-        // Immediate (5bits)
-        // LSRS <Rd > , <Rm> ,# <imm5>
-        // 15 14 13 12 11 | 10 9 8 7 6 | 5 4 3 | 2 1 0
-        //  0  0  0  0  1 |       imm5 |    Rm |    Rd
-        return 0b00001'00000'000'000;
-
-        // Registers
-        // LSRS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 0 0 1 1    Rm   Rdn
-        return 0b0100000011'000'000;
+        if (args.size() == 3){
+            // Immediate (5bits)
+            // LSRS <Rd > , <Rm> ,# <imm5>
+            // 15 14 13 12 11 | 10 9 8 7 6 | 5 4 3 | 2 1 0
+            //  0  0  0  0  1 |       imm5 |    Rm |    Rd
+            return std::bitset<16>(0b00001'00000'000'000) |
+                    parseImm<5>(args[2]) << 6 | parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        } else if (args.size() == 2){
+            // Registers
+            // LSRS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 0 0 1 1    Rm   Rdn
+            return std::bitset<16>(0b0100000011'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("asrs?"))){
-        // ASRS <Rd > , <Rm> ,# <imm5>
-        // 15 14 13 12 11 | 10 9 8 7 6 | 5 4 3 | 2 1 0
-        //  0  0  0  1  0 |       imm5 |    Rm |    Rd
-        return 0b00010'00000'000'000;
+        if (args.size() == 3){
+            // ASRS <Rd > , <Rm> ,# <imm5>
+            // 15 14 13 12 11 | 10 9 8 7 6 | 5 4 3 | 2 1 0
+            //  0  0  0  1  0 |       imm5 |    Rm |    Rd
+            return std::bitset<16>(0b00010'00000'000'000) |
+                    parseImm<5>(args[2]) << 6 | parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("adds?"))){
-        // Registers
-        // ADDS <Rd > , < Rn > , <Rm>
-        // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
-        //  0  0  0  1  1  0 0 |    Rm |    Rn |    Rd
-        return 0b0001100'000'000'000;
-
-        // Immediate (3bits)
-        // ADDS <Rd > , < Rn> , <#imm3>
-        // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
-        //  0  0  0  1  1  1 0 |  Imm3 |    Rn |    Rd
-        return 0b0001110'000'000'000;
-
-        // Immediate (8bits)
-        // ADDS <Rdn > , [ < Rdn > , ] #<imm8>
-        // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
-        //  0  0  1  1  0 |     Rd |            imm8
-        return 0b00110'000'00000000;
+        // TODO Complex if (done)
+        if (args[0] != "sp" && args.size() == 3){
+            if (args.size() == 3 && args[2][0] == 'r'){
+                // Registers
+                // ADDS <Rd > , < Rn > , <Rm>
+                // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
+                //  0  0  0  1  1  0 0 |    Rm |    Rn |    Rd
+                return std::bitset<16>(0b0001100'000'000'000) |
+                       parseRegister(args[2]) << 6 | parseRegister(args[1]) << 3 | parseRegister(args[0]);
+            } else if (args.size() == 3 && args[2][0] == '#'){
+                // Immediate (3bits)
+                // ADDS <Rd > , < Rn> , <#imm3>
+                // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
+                //  0  0  0  1  1  1 0 |  Imm3 |    Rn |    Rd
+                return std::bitset<16>(0b0001110'000'000'000) |
+                       parseImm<3>(args[2]) << 6 | parseRegister(args[1]) << 3 | parseRegister(args[0]);
+            } else {
+                // Immediate (8bits)
+                // ADDS <Rdn > , [ < Rdn > , ] #<imm8>
+                // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
+                //  0  0  1  1  0 |     Rd |            imm8
+                return std::bitset<16>(0b00110'000'00000000) |
+                       parseRegister(args[0]) << 8 | parseImm<8>(args[args.size() - 1]);
+            }
+        } else {
+            // TODO Check sp (done)
+            // SP + Immediate (7bits)
+            // ADD [ SP , ] SP,# <offset>
+            // 15 14 13 12 11 10 9 8 7 | 6 5 4 3 2 1 0
+            //  1  0  1  1  0  0 0 0 0 |          imm7
+            return std::bitset<16>(0b101100000'0000000) |
+                   parseImm<7>(args[args.size() - 1], true);
+        }
     } else if (std::regex_match(instruction, std::regex("subs?"))){
-        // Registers
-        // SUBS <Rd > , < Rn > , <Rm>
-        // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
-        //  0  0  0  1  1  0 1 |    Rm |    Rn |    Rd
-        return 0b0001101'000'000'000;
+        // TODO Complex if
+        if (args.size() == 3){
+            // Registers
+            // SUBS <Rd > , < Rn > , <Rm>
+            // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
+            //  0  0  0  1  1  0 1 |    Rm |    Rn |    Rd
+            return std::bitset<16>(0b0001101'000'000'000) |
+                   parseRegister(args[0]) << 6 | parseRegister(args[1]) << 3 | parseRegister(args[0]);
 
-        // Immediate (3bits)
-        // SUBS <Rd > , < Rn> ,# <imm3>
-        // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
-        //  0  0  0  1  1  1 1 |  Imm3 |    Rn |    Rd
-        return 0b0001111'000'000'000;
-
-        // Immediate (8bits)
-        // SUBS <Rdn > , [ < Rdn > , ] #<imm8>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  0  1  1  1     Rd            imm8
-        return 0b00111'000'00000000;
-
-        // Immediate (7bits)
-        // SUB [ SP , ] SP,# <offset>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  1  0  1  1  0  0 0 0 1          imm7
-        return 0b101100001'0000000;
+            // Immediate (3bits)
+            // SUBS <Rd > , < Rn> ,# <imm3>
+            // 15 14 13 12 11 10 9 | 8 7 6 | 5 4 3 | 2 1 0
+            //  0  0  0  1  1  1 1 |  Imm3 |    Rn |    Rd
+            return std::bitset<16>(0b0001111'000'000'000) |
+                   parseImm<3>(args[2]) << 6 | parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        } else if (args.size() == 2){
+            if (args[0] != "sp"){
+                // Immediate (8bits)
+                // SUBS <Rdn > , [ < Rdn > , ] #<imm8>
+                // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+                //  0  0  1  1  1     Rd            imm8
+                return std::bitset<16>(0b00111'000'00000000) |
+                       parseRegister(args[0]) << 8 | parseImm<8>(args[args.size() - 1]);
+            } else {
+                // TODO Check sp (done)
+                // Immediate (7bits)
+                // SUB [ SP , ] SP,# <offset>
+                // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+                //  1  0  1  1  0  0 0 0 1          imm7
+                return std::bitset<16>(0b101100001'0000000) | parseImm<7>(args[args.size() - 1], true);
+            }
+        }
     } else if (std::regex_match(instruction, std::regex("movs?"))){
-        // MOVS <Rd> ,# <imm8>
-        // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
-        //  0  0  1  0  0 |     Rd |            imm8
-        return 0b00100'000'00000000;
+        if (args.size() == 2){
+            // MOVS <Rd> ,# <imm8>
+            // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
+            //  0  0  1  0  0 |     Rd |            imm8
+            return std::bitset<16>(0b00100'000'00000000) |
+                   parseRegister(args[0]) << 8 | parseImm<8>(args[1]);
+        }
     } else if (std::regex_match(instruction, std::regex("cmp"))){
+        // TODO Complex if
         // Immediate (8bits)
         // CMP <Rd> ,# <imm8>
         // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
         //  0  0  1  0  1 |     Rd |            imm8
-        return 0b00101'000'00000000;
+        return std::bitset<16>(0b00101'000'00000000) |
+                parseRegister(args[0]) << 8 | parseImm<8>(args[1]);
 
         // Registers
         // CMP <Rn > , <Rm>
         // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
         //  0  1  0  0  0  0 1 0 1 0    Rm    Rn
-        return 0b0100001010'000'000;
+        return std::bitset<16>(0b0100001010'000'000) |
+                parseRegister(args[1]) << 3 | parseRegister(args[0]);
     } else if (std::regex_match(instruction, std::regex("ands?"))){
-        // ANDS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 0 0 0 0    Rm   Rdn
-        return 0b0100000000'000'000;
+        if (args.size() == 2){
+            // ANDS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 0 0 0 0    Rm   Rdn
+            return std::bitset<16>(0b0100000000'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("eors?"))){
-        // EORS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 0 0 0 1    Rm   Rdn
-        return 0b0100000001'000'000;
+        if (args.size() == 2){
+            // EORS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 0 0 0 1    Rm   Rdn
+            return std::bitset<16>(0b0100000001'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("asrs?"))){
-        // ASRS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 0 1 0 0    Rm   Rdn
-        return 0b01000000100'000'000;
+        if (args.size() == 2){
+            // ASRS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 0 1 0 0    Rm   Rdn
+            return std::bitset<16>(0b01000000100'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("adcs?"))){
-        // ADCS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 0 1 0 1    Rm   Rdn
-        return 0b0100000101'000'000;
+        if (args.size() == 2){
+            // ADCS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 0 1 0 1    Rm   Rdn
+            return std::bitset<16>(0b0100000101'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("sbcs?"))){
-        // SBCS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 0 1 1 0    Rm   Rdn
-        return 0b0100000110'000'000;
+        if (args.size() == 2){
+            // SBCS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 0 1 1 0    Rm   Rdn
+            return std::bitset<16>(0b0100000110'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("rors"))){
-        // RORS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 0 1 1 1    Rm   Rdn
-        return 0b0100000111'000'000;
+        if (args.size() == 2){
+            // RORS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 0 1 1 1    Rm   Rdn
+            return std::bitset<16>(0b0100000111'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("tst"))){
-        // TST <Rn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 1 0 0 0    Rm    Rn
-        return 0b0100001000'000'000;
+        if (args.size() == 2){
+            // TST <Rn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 1 0 0 0    Rm    Rn
+            return std::bitset<16>(0b0100001000'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("rsbs?"))){
-        // RSBS <Rd > , < Rn> ,#0
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 1 0 0 1    Rn    Rd
-        return 0b0100001001'000'000;
+        if (args.size() == 3){
+            // RSBS <Rd > , < Rn> ,#0
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 1 0 0 1    Rn    Rd
+            return std::bitset<16>(0b0100001001'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("cmn"))){
-        // CMN <Rn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 1 0 1 1    Rm    Rn
-        return 0b0100001011'000'000;
+        if (args.size() == 2){
+            // CMN <Rn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 1 0 1 1    Rm    Rn
+            return std::bitset<16>(0b0100001011'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("orrs?"))){
-        // ORRS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 1 1 0 0    Rm   Rdn
-        return 0b0100001100'000'000;
+        if (args.size() == 2){
+            // ORRS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 1 1 0 0    Rm   Rdn
+            return std::bitset<16>(0b0100001100'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("muls?"))){
-        // MULS <Rdm> , < Rn > , <Rdm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 1 1 0 1    Rn   Rdm
-        return 0b0100001101'000'000;
+        if (args.size() == 3){
+            // MULS <Rdm> , < Rn > , <Rdm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 1 1 0 1    Rn   Rdm
+            return std::bitset<16>(0b0100001101'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("bics?"))){
-        // BICS <Rdn > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 1 1 1 0    Rm   Rdn
-        return 0b0100001110'000'000;
+        if (args.size() == 2){
+            // BICS <Rdn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 1 1 1 0    Rm   Rdn
+            return std::bitset<16>(0b0100001110'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("mvns?"))){
-        // MVNS <Rd > , <Rm>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  0  1  0  0  0  0 1 1 1 1    Rm    Rd
-        return 0b0100001111'000'000;
+        if (args.size() == 2){
+            // MVNS <Rd > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 1 1 1 1    Rm    Rd
+            return std::bitset<16>(0b0100001111'000'000) |
+                    parseRegister(args[1]) << 3 | parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("str"))){
+        // TODO Complex if
         // STR <Rt > , [ SP,# <offset> ]
         // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
         //  1  0  0  1  0     Rt            imm8
-        return 0b10010'000'00000000;
+        std::bitset<16> bin(0b10010'000'00000000);
+
+        /*if (args.size() == ){
+            bin |= parseImm<>();
+        }*/
+
+        return bin | parseRegister(args[0]) << 8;
     } else if (std::regex_match(instruction, std::regex("ldr"))){
+        // TODO Complex if
         // LDR <Rt > , [ SP{ , # <offset> } ]
         // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
         //  1  0  0  1  1     Rt            imm8
-        return 0b10011'000'00000000;
+        return std::bitset<16>(0b10011'000'00000000) |
+                parseRegister(args[0]) << 8;
     } else if (std::regex_match(instruction, std::regex("cmp?"))){
+        // TODO Complex if
         // ADD [ SP , ] SP,# <offset>
         // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
         //  1  0  1  1  0  0 0 0 0          imm7
-        return 0b101100000'0000000;
-    } else if (std::regex_match(instruction, std::regex("b?"))){
-        // Immediate (8nits)
-        // B<c> <label>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  1  1  0  1      cond            imm8
-        return 0b1101'0000'00000000;
-
-        // Immediate (11bits)
-        // B <label>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  1  1  1  0  0                  imm11
-        return 0b11100'00000000000;
+        return std::bitset<16>(0b101100000'0000000) |
+                parseImm<7>(args[args.size() - 1], true);
+    } else if (std::regex_match(instruction, std::regex("b.?"))){
+        if (instruction == "b" || instruction == "bx"){
+            // TODO label
+            // Immediate (11bits)
+            // B <label>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  1  1  1  0  0                  imm11
+            return std::bitset<16>(0b11100'00000000000);
+        } else {
+            // TODO label
+            // Immediate (8bits)
+            // B<c> <label>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  1  1  0  1      cond            imm8
+            return std::bitset<16>(0b1101'0000'00000000) |
+                    parseCondition(instruction.substr(1)) << 8;
+        }
     }
 
     std::string message = "unknown instruction " + instruction;
@@ -222,7 +379,7 @@ int main(int argc, char** argv){
     auto startTime = high_resolution_clock::now();
     regex extensionRegex("^(.*)[.]s$");
     regex labelRegex("^.*:$");
-    regex startsWithPointRegex("^\t?[.].*$");
+    regex instructionRegex("^\t[^.].*$");
     string reason;
 
     try {
@@ -238,47 +395,73 @@ int main(int argc, char** argv){
                 ifstream in(inFile, std::ios::in);
                 ofstream out(outFile, std::ios::out);
 
-                std::cout << "assembling in file " << outFile.string() << std::endl;
+                if (in){
 
-                std::string line;
-                std::string label;
+                    std::cout << "assembling in file " << outFile.string() << std::endl;
 
-                while (std::getline(in, line)){
-                    replace_all(line, ", ", ",");
-                    std::istringstream iss(line);
+                    std::string line;
+                    std::map<std::string, int> labels;
+                    int pc = 0;
 
-                    bool point = regex_match(line, startsWithPointRegex);
+                    //out << "2.0 raw" << std::endl;
 
-                    std::cout << "newline" << (point ? " . point here" : "") << std::endl;
+                    while (std::getline(in, line)){
+                        replace_all(line, ", ", ",");
+                        replace_all(line, "[", "");
+                        replace_all(line, "]", "");
+                        std::istringstream iss(line);
 
-                    if (regex_match(line, labelRegex)){
+                        if (regex_match(line, labelRegex)){
 
-                        std::string label = line.substr(0, line.find(':'));
-                        labels[label] =  pc + 1;
-                        std::cout << "label: " << label << std::endl;
+                            std::string label = line.substr(0, line.find(':'));
+                            labels[label] = pc;
+                            std::cout << "label: " << label << "(" << labels[label] << ")" << std::endl;
 
-                    } else {
+                        } else if (regex_match(line, instructionRegex)){
 
-                        std::vector<std::string> words {
-                                std::istream_iterator<std::string>(iss),
-                                std::istream_iterator<std::string>()};
+                            std::vector<std::string> words{
+                                    std::istream_iterator<std::string>(iss),
+                                    std::istream_iterator<std::string>()};
 
-                        std::string instruction = words[0];
-                        words.erase(words.begin());
-                        std::cout << std::hex << convert_instruction(instruction, words) << std::endl;
+                            std::string instruction = words[0];
+                            words.erase(words.begin());
 
-                        for (const auto& x : words)
-                            std::cout << "word: " << x << std::endl;
+                            std::istringstream argsStream(words[0]);
+                            std::string arg;
+                            std::vector<string> args;
 
+                            while (std::getline(argsStream, arg, ',')){
+                                args.push_back(arg);
+                            }
+
+                            std::cout << std::hex << convert_instruction(instruction, args).to_ullong() << std::endl;
+
+                            std::cout << instruction << '(';
+
+                            for (const auto& x: args)
+                                std::cout << x << ',';
+
+                            std::cout << ')' << std::endl;
+
+                            ++pc;
+
+                        }
                     }
-                }
 
-                //out << "2.0 raw" << std::endl;
-                std::cout << "avengers assembled in " << outFile << " in " << duration_cast<seconds>(high_resolution_clock::now() - startTime).count() << "s!" << std::endl;
+                    std::cout << "avengers assembled in " << outFile << " in " <<
+                              duration_cast<seconds>(high_resolution_clock::now() - startTime).count() << "s!"
+                              << std::endl;
+
+                } else {
+
+                    throw exception("file " + path(inFile).filename().string() + " being non-existent.");
+
+                }
 
             } else {
 
-                throw exception("file " + path(inFile).filename().string() + " not being in assembly format (*.s).");
+                throw exception("file " + path(inFile).filename().string() +
+                    " not being in assembly format (*.s).");
 
             }
 
