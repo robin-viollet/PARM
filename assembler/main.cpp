@@ -132,7 +132,7 @@ std::bitset<16> convert_instruction(const std::string& instruction, std::vector<
                     parseImm<5>(args[2]) << 6 | parseRegister(args[1]) << 3 | parseRegister(args[0]);
         }
     } else if (std::regex_match(instruction, std::regex("adds?"))){
-        if (args[0] != "sp" && args.size() == 3){
+        if (args[0] != "sp" && args[1] != "sp"){
             if (args.size() == 3 && args[2][0] == 'r'){
                 // Registers
                 // ADDS <Rd > , < Rn > , <Rm>
@@ -155,7 +155,7 @@ std::bitset<16> convert_instruction(const std::string& instruction, std::vector<
                 return std::bitset<16>(0b00110'000'00000000) |
                        parseRegister(args[0]) << 8 | parseImm<8>(args[args.size() - 1]);
             }
-        } else {
+        } else if (args[0] == "sp"){
             // SP + Immediate (7bits)
             // ADD [ SP , ] SP,# <offset>
             // 15 14 13 12 11 10 9 8 7 | 6 5 4 3 2 1 0
@@ -198,11 +198,20 @@ std::bitset<16> convert_instruction(const std::string& instruction, std::vector<
         }
     } else if (std::regex_match(instruction, std::regex("movs?"))){
         if (args.size() == 2){
-            // MOVS <Rd> ,# <imm8>
-            // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
-            //  0  0  1  0  0 |     Rd |            imm8
-            return std::bitset<16>(0b00100'000'00000000) |
-                   parseRegister(args[0]) << 8 | parseImm<8>(args[1]);
+            if (args[1][0] == '#'){
+                // MOVS <Rd> ,# <imm8>
+                // 15 14 13 12 11 | 10 9 8 | 7 6 5 4 3 2 1 0
+                //  0  0  1  0  0 |     Rd |            imm8
+                return std::bitset<16>(0b00100'000'00000000) |
+                parseRegister(args[0]) << 8 | parseImm<8>(args[1]);
+            } else {
+                // TODO Check that this exists
+                // MOVS <Rd> , <Rn>
+                // 15 14 13 12 11 10 9 8 7 6 | 5 4 3 | 2 1 0
+                //  0  0  0  0  0  0 0 0 0 0 |    Rd |    Rn
+                return std::bitset<16>(0b0000000000'000'000) |
+                       parseRegister(args[1]) << 3 | parseRegister(args[0]);
+            }
         }
     } else if (std::regex_match(instruction, std::regex("cmp"))){
         if (args[1][0] == '#'){
@@ -349,11 +358,21 @@ std::bitset<16> convert_instruction(const std::string& instruction, std::vector<
                    parseRegister(args[0]) << 8;
         }
     } else if (std::regex_match(instruction, std::regex("cmp?"))){
-        // ADD [ SP , ] SP,# <offset>
-        // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
-        //  1  0  1  1  0  0 0 0 0          imm7
-        return std::bitset<16>(0b101100000'0000000) |
-                parseImm<7>(args[args.size() - 1], true);
+        if (args[1][0] == '#'){
+            // CMP <Rd> ,# <imm8>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  0  1  0  1     Rd            imm8
+            return std::bitset<16>(0b00101'000'00000000) |
+                   parseRegister(args[0]) << 8 |
+                   parseImm<8>(args[1]);
+        } else {
+            // CMP <Rn > , <Rm>
+            // 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+            //  0  1  0  0  0  0 1 0 1 0    Rm    Rn
+            return std::bitset<16>(0b0100001010'000'000) |
+                   parseRegister(args[1]) << 3 |
+                   parseRegister(args[0]);
+        }
     } else if (std::regex_match(instruction, std::regex("b.{0,2}"))){
         if (instruction == "b" || instruction == "bx"){
             // Immediate (11bits)
@@ -389,7 +408,7 @@ int main(int argc, char** argv){
     auto startTime = high_resolution_clock::now();
     regex extensionRegex("^(.*)[.]s$");
     regex labelRegex("^.*:$");
-    regex instructionRegex("^\t?[^.@].*$");
+    regex instructionRegex("^\t?[^.@\t].*$");
     string reason;
 
     try {
@@ -426,8 +445,8 @@ int main(int argc, char** argv){
                             if (regex_match(line, labelRegex)){
 
                                 std::string label = line.substr(0, line.find(':'));
-                                labels[label] = pc;
-                                std::cout << "label: " << label << "(" << labels[label] << " pc: " << pc << ")" << std::endl;
+                                labels[label] = pc + 1;
+                                std::cout << "label: " << label << "(" << labels[label] << ")" << std::endl;
 
                             } else if (regex_match(line, instructionRegex)){
 
