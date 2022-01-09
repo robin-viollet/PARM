@@ -28,7 +28,7 @@ void replace_all(std::string& str, std::string_view what, std::string_view with)
 }
 
 std::bitset<16> parseRegister(std::string& s){
-    if (s.size() > 0 && s[0] == 'r'){
+    if (!s.empty() && s[0] == 'r'){
         return std::bitset<3>(std::stoi(s.substr(1))).to_ullong();
     }
 
@@ -37,7 +37,7 @@ std::bitset<16> parseRegister(std::string& s){
 
 template <int T>
 std::bitset<16> parseImm(std::string& s, bool sp = false){
-    if (s.size() > 0 && s[0] == '#'){
+    if (!s.empty() && s[0] == '#'){
         return std::bitset<T>(std::stoi(s.substr(1)) / (sp ? 4 : 1)).to_ullong();
     }
 
