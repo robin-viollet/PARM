@@ -408,7 +408,7 @@ int main(int argc, char** argv){
     auto startTime = high_resolution_clock::now();
     regex extensionRegex("^(.*)[.]s$");
     regex labelRegex("^.*:$");
-    regex instructionRegex("^\t?[^.@\t].*$");
+    regex instructionRegex("^\t?[^.@\t].*[^:]$");
     string reason;
 
     try {
@@ -445,7 +445,8 @@ int main(int argc, char** argv){
                             if (regex_match(line, labelRegex)){
 
                                 std::string label = line.substr(0, line.find(':'));
-                                labels[label] = pc + 1;
+                                labels[label] = pc;
+                                //labels[label] = pc + 1;
                                 std::cout << "label: " << label << "(" << labels[label] << ")" << std::endl;
 
                             } else if (regex_match(line, instructionRegex)){
