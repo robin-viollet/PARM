@@ -489,12 +489,10 @@ int main(int argc, char** argv){
                                     std::cout << std::hex << convert_instruction(instruction, args).to_ullong()
                                               << std::endl;
 
-                                } else {
-
-                                    out << std::setfill('0') << std::hex << std::setw(4)
-                                        << convert_instruction(instruction, args).to_ullong() << ' ';
-
                                 }
+
+                                out << std::setfill('0') << std::hex << std::setw(4)
+                                    << convert_instruction(instruction, args).to_ullong() << ' ';
 
                             } catch (exception& e){
                                 std::cerr << e.what() << std::endl;
@@ -512,11 +510,7 @@ int main(int argc, char** argv){
                         }
                     }
 
-                    if (!debug){
-
-                        out << std::endl;
-
-                    }
+                    out << std::endl;
 
                     std::cout << "avengers assembled in " << outFile << " in " <<
                               duration_cast<seconds>(high_resolution_clock::now() - startTime).count() << "s!"
