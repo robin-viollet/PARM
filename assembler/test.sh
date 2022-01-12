@@ -2,8 +2,8 @@
 # Run with ./test.sh (you must be in the same directory)
 
 avengers="$PWD/cmake-build-debug/avengers"
-code_asm="../../TP2/parm_public/code_asm/test_integration/"
-code_c="../../TP2/parm_public/code_c/"
+code_asm="../../parm_public/code_asm/test_integration/"
+code_c="../../parm_public/code_c/"
 
 function run_test(){
     pushd "$1" > /dev/null
