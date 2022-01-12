@@ -12,7 +12,7 @@ function run_test(){
     do
         echo "Testing file $file"
         "$avengers" "$file" &> /dev/null || echo "Failed to build file $file!"
-        git diff --name-status -- "${file/.s/.bin}"
+        git diff --name-status --exit-code -- "${file/.s/.bin}" && echo "no difference"
     done
 
     popd > /dev/null
