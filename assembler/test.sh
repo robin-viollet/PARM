@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Run with ./test.sh (you must be in the same directory)
+# parm_public (https://bitbucket.org/edge-team-leat/parm_public)
+# needs to be cloned in the same parent directory as this repo
+# avengers must be compiled in the directory cmake-build-debug
 
 avengers="$PWD/cmake-build-debug/avengers"
 code_asm="../../parm_public/code_asm/test_integration/"
