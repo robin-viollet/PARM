@@ -446,7 +446,6 @@ int main(int argc, char** argv){
 
                                 std::string label = line.substr(0, line.find(':'));
                                 labels[label] = pc;
-                                //labels[label] = pc + 1;
                                 std::cout << "label: " << label << "(" << labels[label] << ")" << std::endl;
 
                             } else if (regex_match(line, instructionRegex)){
