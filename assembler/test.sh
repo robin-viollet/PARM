@@ -5,8 +5,8 @@
 # avengers must be compiled in the directory cmake-build-debug
 
 avengers="$PWD/cmake-build-debug/avengers"
-code_asm="../../parm_public/code_asm/test_integration/"
-code_c="../../parm_public/code_c/"
+code_asm="../tests/code_asm/"
+code_c="../tests/code_c/"
 
 function run_test(){
     pushd "$1" > /dev/null
